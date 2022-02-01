@@ -61,7 +61,7 @@ public class Bech32 {
     private func verifyChecksum(hrp: String, checksum: Data) -> Bool {
         var data = expandHrp(hrp)
         data.append(checksum)
-        return polymod(data) == 1
+        return polymod(data) == checksumConst
     }
     
     /// Create checksum
