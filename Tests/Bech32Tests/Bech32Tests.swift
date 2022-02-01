@@ -80,6 +80,15 @@ class Bech32Tests: XCTestCase {
             ])
     ]
     
+    private let _validAddressDataBech32m: [ValidAddressData] = [
+        ("bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr", [
+            0x51, 0x20, 0xa6, 0x08, 0x69, 0xf0, 0xdb, 0xcf, 0x1d, 0xc6, 0x59,
+            0xc9, 0xce, 0xcb, 0xaf, 0x80, 0x50, 0x13, 0x5e, 0xa9, 0xe8, 0xcd,
+            0xc4, 0x87, 0x05, 0x3f, 0x1d, 0xc6, 0x88, 0x09, 0x49, 0xdc, 0x68,
+            0x4c
+            ])
+    ]
+    
     private let _invalidAddressData: [InvalidAddressData] = [
         ("BC", 0, 20),
         ("bc", 0, 21),
@@ -90,7 +99,8 @@ class Bech32Tests: XCTestCase {
     
     let bech32 = Bech32()
     let addrCoder = SegwitAddrCoder()
-    
+    let addrCoderBech32m = SegwitAddrCoder(bech32m: true)
+
     func testValidChecksum() {
         for valid in _validChecksum {
             do {
@@ -136,12 +146,38 @@ class Bech32Tests: XCTestCase {
                 XCTFail("Failed to decode \(address)")
                 continue
             }
-
             let scriptPk = segwitPubKey(version: decoded!.version, program: decoded!.program)
             XCTAssert(scriptPk == script, "Decoded script mismatch: \(scriptPk.hex) != \(script.hex)")
             
             do {
                 let recoded = try addrCoder.encode(hrp: hrp, version: decoded!.version, program: decoded!.program)
+                XCTAssertFalse(recoded.isEmpty, "Recoded string is empty for \(address)")
+            } catch {
+                XCTFail("Roundtrip encoding failed for \"\(address)\" with error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func testValidAddressBech32m() {
+        for valid in _validAddressDataBech32m {
+            let address = valid.address
+            var hrp = "bc"
+            
+            var decoded = try? addrCoderBech32m.decode(hrp: hrp, addr: address)
+            
+            do {
+                if decoded == nil {
+                    hrp = "tb"
+                    decoded = try addrCoderBech32m.decode(hrp: hrp, addr: address)
+                }
+            } catch {
+                XCTFail("Failed to decode \(address)")
+                continue
+            }
+            
+            do {
+                let recoded = try addrCoderBech32m.encode(hrp: hrp, version: decoded!.version, program: decoded!.program)
+                print("recoded Address: \(recoded)")
                 XCTAssertFalse(recoded.isEmpty, "Recoded string is empty for \(address)")
             } catch {
                 XCTFail("Roundtrip encoding failed for \"\(address)\" with error: \(error.localizedDescription)")
