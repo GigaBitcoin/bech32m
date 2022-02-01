@@ -1,21 +1,10 @@
-//
-//  SegwitAddrCoder.swift
-//
-//  Created by Evolution Group Ltd on 12.02.2018.
-//  Copyright © 2018 Evolution Group Ltd. All rights reserved.
-//
-
-//  Base32 address format for native v0-16 witness outputs implementation
-//  https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
-//  Inspired by Pieter Wuille C++ implementation
-
 import Foundation
 
 /// Segregated Witness Address encoder/decoder
 public class SegwitAddrCoder {
     private let bech32: Bech32
 
-    init(bech32m: Bool = false) {
+    public init(bech32m: Bool = false) {
         bech32 = Bech32(bech32m: bech32m)
     }
 

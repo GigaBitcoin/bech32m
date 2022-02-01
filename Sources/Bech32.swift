@@ -1,10 +1,3 @@
-//
-//  Bech32.swift
-//
-//  Created by Evolution Group Ltd on 12.02.2018.
-//  Copyright © 2018 Evolution Group Ltd. All rights reserved.
-//
-
 //  Base32 address format for native v0-16 witness outputs implementation
 //  https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
 //  Inspired by Pieter Wuille C++ implementation
@@ -18,7 +11,7 @@ public class Bech32 {
     private static let BECH32_CONST = UInt32(1)
     private let checksumConst: UInt32
 
-    init(bech32m: Bool = false) {
+    public init(bech32m: Bool = false) {
         checksumConst = bech32m ? Self.BECH32M_CONST : Self.BECH32_CONST
     }
 
